@@ -1,0 +1,26 @@
+version: '3'
+services:
+  db:
+    image: postgis/postgis:12-3.1-alpine
+    volumes:
+      - /var/lib/docker-postgresql/data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=jedeschule
+      - POSTGRES_PASSWORD=jedeschule
+      - POSTGRES_DB=jedeschule
+    ports:
+        - "127.0.0.1:5432:5432"
+  web:
+    image: knuthuehne/jedeschule-api:latest
+    ports:
+      - "8888:80"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://jedeschule:jedeschule@db:5432/jedeschule
+  scrapers:
+    image: knuthuehne/jedeschule-scrapers:latest
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://jedeschule:jedeschule@db:5432/jedeschule
